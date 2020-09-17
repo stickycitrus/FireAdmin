@@ -185,6 +185,7 @@ export class PostsService extends DocumentTranslationsService {
     const post: Post = {
       title: data.title,
       price: data.price,
+      image: null,
       lang: data.lang,
       slug: data.slug,
       date: data.date,
@@ -195,7 +196,6 @@ export class PostsService extends DocumentTranslationsService {
       updatedBy: this.db.currentUser.id
     };
     if (/*data.image !== undefined && */data.images === []) {
-      post.image = null;
       post.images = []
     }
     return new Promise((resolve, reject) => {

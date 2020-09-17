@@ -168,7 +168,12 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
   onImageDelete(id) {
     this.galleryDeleteList.push(id);
     const index = this.imagesSources.findIndex(x => x.id == id);
-    this.imagesSources.splice(index);
+    this.imagesSources.splice(index-1, 1);
+    if (this.imagesSources.length == 0) {
+      this.image = null;
+      this.imageSrc = null;
+      this.images = [];
+    }
     //temp delete first and actually delete on save!
     //  this.posts.deleteImageFromGallery(this.id, id).then(() => {
     //    setTimeout(() => {this.loadGallery();}, 500);
