@@ -22,6 +22,7 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private id: string;
   title: string;
+  price: string;
   editor: any;
   status: PostStatus;
   language: string;
@@ -57,6 +58,7 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
           if (post) {
             this.id = post.id;
             this.title = post.title;
+            this.price = post.price;
             this.editor.root.innerHTML = post.content;
             this.status = post.status;
             this.slug = post.slug;
@@ -159,6 +161,7 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
         const data: Post = {
           lang: this.language,
           title: this.title,
+          price: this.price,
           slug: this.slug,
           date: new Date(this.date).getTime(),
           content: this.editor.root.innerHTML,

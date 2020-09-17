@@ -5,6 +5,7 @@ export interface Post {
   id?: string,
   lang: string,
   title: string,
+  price: string,
   slug: string,
   date: number, // timestamp
   image?: File|string|Observable<string>|{ path: string|any, url: string|Observable<string> },

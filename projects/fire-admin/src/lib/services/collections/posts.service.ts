@@ -172,6 +172,7 @@ export class PostsService extends DocumentTranslationsService {
   edit(id: string, data: Post) {
     const post: Post = {
       title: data.title,
+      price: data.price,
       lang: data.lang,
       slug: data.slug,
       date: data.date,

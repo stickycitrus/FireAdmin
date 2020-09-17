@@ -14,6 +14,7 @@
         <div class="card-body">
           <form class="add-new-post">
             <input class="form-control form-control-lg mb-3" type="text" placeholder="{{ 'PostTitle' | translate }}" [(ngModel)]="title" name="title" (input)="onTitleInput()">
+            <input class="form-control form-control-lg mb-3" type="text" placeholder="{{ 'Price' | translate }}" [(ngModel)]="price" name="price">
             <div id="editor-container" class="add-new-post__editor mb-1"></div>
           </form>
         </div>
