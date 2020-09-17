@@ -23,6 +23,7 @@ export class PostsTranslateComponent implements OnInit, AfterViewInit, OnDestroy
 
   private origin: Post;
   title: string;
+  price: string;
   editor: any;
   private status: PostStatus;
   language: string;
@@ -174,6 +175,7 @@ export class PostsTranslateComponent implements OnInit, AfterViewInit, OnDestroy
           lang: this.language,
           title: this.title,
           slug: this.slug,
+          price: this.price,
           date: new Date(this.date).getTime(),
           content: this.editor.root.innerHTML,
           image: this.image,
