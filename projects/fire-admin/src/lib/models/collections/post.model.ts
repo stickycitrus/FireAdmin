@@ -8,6 +8,7 @@ export interface Post {
   price: string,
   slug: string,
   date: number, // timestamp
+  images?: File[]|string[]
   image?: File|string|Observable<string>|{ path: string|any, url: string|Observable<string> },
   content: string,
   status: PostStatus,

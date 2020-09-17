@@ -23,6 +23,14 @@
   overflow-y: auto;
 }
 
+.edit-user-details__add {
+  width: 100%;
+  height:250px;
+  text-align: center;
+  max-width: 100%;
+  box-shadow: none;
+}
+
 .edit-user-details__avatar {
   width: 100%;
   text-align: center;
@@ -33,9 +41,15 @@
 .edit-user-details__avatar img {
   width: auto;
   /*max-width: 7.5rem;*/
-  max-height: 9.5rem;
+  max-height: 15.5rem;
 }
 
 .edit-user-details__avatar__change i {
-  line-height: 8.5rem;
+  line-height: 15.5rem;
+  font-size: 3rem;
+}
+
+.edit-user-details__add__change i {
+  line-height: 15.5rem;
+  font-size: 3rem;
 }

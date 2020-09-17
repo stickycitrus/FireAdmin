@@ -71,7 +71,7 @@ export const en = {
   "PostLanguage": "Language",
   "PostStatus": "Status",
   "PostDate": "Date",
-  "PostImage": "Image",
+  "PostImage": "Images",
   "PostSlug": "Slug",
   "SaveDraft": "Save Draft",
   "Publish": "Publish",

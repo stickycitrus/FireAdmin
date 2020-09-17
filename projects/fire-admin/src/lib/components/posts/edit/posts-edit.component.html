@@ -20,6 +20,8 @@
         </div>
       </div>
       <!-- / Add New Post Form -->
+
+
     </div>
     <div class="col-lg-3 col-md-12">
       <!-- Post Overview -->
@@ -58,23 +60,6 @@
       </div>
       <!-- / Post Overview -->
       <!-- Post Overview -->
-      <div class="card card-small mb-3">
-        <div class="card-header border-bottom cursor-pointer" (click)="imageCardHeader.isToggled = !imageCardHeader.isToggled" #imageCardHeader>
-          <h6 class="m-0">{{ 'PostImage' | translate }}</h6>
-          <div class="block-handle"></div>
-        </div>
-        <div class="card-body p-0" [class.d-none]="!imageCardHeader.isToggled">
-          <span class="d-flex">
-            <div class="edit-user-details__avatar rounded-0" (click)="postImage.click()">
-              <img [src]="imageSrc | escapeUrl" alt="Post image">
-              <label class="edit-user-details__avatar__change rounded-0">
-                <i class="material-icons mr-1">add_a_photo</i>
-                <input type="file" accept="image/*" class="d-none" (change)="onImageChange($event)" #postImage>
-              </label>
-            </div>
-          </span>
-        </div>
-      </div>
       <!-- / Post Overview -->
       <!-- Post Overview -->
       <div class="card card-small mb-3">
@@ -103,5 +88,32 @@
       </div>
       <!-- / Post Overview -->
     </div>
+
+    <div class="col-lg-12 col-md-12">
+      <!-- images form -->
+      <div class="card card-small mb-3">
+        <div class="card-header border-bottom cursor-pointer" (click)="imageCardHeader.isToggled = !imageCardHeader.isToggled" #imageCardHeader>
+          <h6 class="m-0">{{ 'PostImage' | translate }}</h6>
+          <div class="block-handle"></div>
+        </div>
+        <div class="card-body p-0" [class.d-none]="imageCardHeader.isToggled">
+            <span class="d-flex">
+              <div *ngFor="let i of imagesSources" class="edit-user-details__avatar rounded-0" (click)="onImageDelete(i)">
+                <img [src]="i.url | escapeUrl" alt="Post image">
+                <label class="edit-user-details__avatar__change rounded-0">
+                  <i class="material-icons mr-1">delete</i>
+                </label>
+              </div><div class="edit-user-details__add rounded-0" (click)="postImage.click()">
+                <label class="edit-user-details__add__change rounded-0">
+                  <i class="material-icons mr-1">add_a_photo</i>
+                  <input type="file" accept="image/*" class="d-none" (change)="onImageChange($event)" #postImage>
+                </label>
+              </div>
+            </span>
+        </div>
+      </div>
+      <!-- / images form -->
+    </div>
+
   </div>
 </fa-layout>

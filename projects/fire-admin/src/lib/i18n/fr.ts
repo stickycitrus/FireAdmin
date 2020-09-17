@@ -71,7 +71,7 @@ export const fr = {
   "PostLanguage": "Langue",
   "PostStatus": "Statut",
   "PostDate": "Date",
-  "PostImage": "Image",
+  "PostImage": "Images",
   "PostSlug": "Slug",
   "SaveDraft": "Enregistrer le brouillon",
   "Publish": "Publier",

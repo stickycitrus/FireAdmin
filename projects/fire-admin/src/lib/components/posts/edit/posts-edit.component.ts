@@ -29,6 +29,8 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
   slug: string;
   date: string;
   private image: File;
+  private images: File[] = [];
+  imagesSources:  any[] = [];
   imageSrc: string|ArrayBuffer;
   checkedCategories: string[] = [];
   categoriesObservable: Observable<Category[]>;
@@ -37,6 +39,7 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
   allStatus: object|any = {};
   private subscription: Subscription = new Subscription();
   private routeParamsChange: Subject<void> = new Subject<void>();
+  private galleryDeleteList: any[] = [];
 
   constructor(
     private i18n: I18nService,
@@ -65,10 +68,13 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
             this.date = new Date(post.date).toISOString().slice(0, 10);
             this.language = post.lang;
             this.image = null;
+            this.images = [];
             this.imageSrc = getEmptyImage();
-            if (post.image) {
-              this.posts.getImageUrl(post.image as  string).pipe(take(1)).toPromise().then((imageUrl: string) => {
-                this.imageSrc = imageUrl;
+            if (post.images) {
+              post.images.forEach(i => {
+                return this.posts.getImageUrl(i as string).pipe(take(1)).toPromise().then((imageUrl: string) => {
+                  this.imagesSources.push({url: imageUrl, id: i});
+                });
               });
             }
             this.checkedCategories = post.categories ? post.categories : [];
@@ -81,6 +87,24 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       })
     );
+  }
+
+  loadGallery() {
+    this.posts.get(this.id).pipe(take(1)).toPromise().then((post: Post) => {
+      // console.log(post);
+
+        if (post.images.length > 0) {
+          post.images.forEach(i => {
+            return this.posts.getImageUrl(i as string).pipe(take(1)).toPromise().then((imageUrl: string) => {
+              this.imagesSources.push({url: imageUrl, id: i});
+            });
+          });
+        } else {
+          this.imagesSources = []
+          this.images = []
+        }
+
+    });
   }
 
   ngAfterViewInit() {
@@ -134,9 +158,21 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
     this.image = (event.target as HTMLInputElement).files[0];
     const reader = new FileReader();
     reader.onload = () => {
+      this.images.push(this.image);
+      this.imagesSources.push({url: reader.result as string});
       this.imageSrc = reader.result;
     };
     reader.readAsDataURL(this.image);
+  }
+
+  onImageDelete(id) {
+    this.galleryDeleteList.push(id);
+    const index = this.imagesSources.findIndex(x => x.id == id);
+    this.imagesSources.splice(index);
+    //temp delete first and actually delete on save!
+    //  this.posts.deleteImageFromGallery(this.id, id).then(() => {
+    //    setTimeout(() => {this.loadGallery();}, 500);
+    //  });
   }
 
   savePost(event: Event) {
@@ -168,12 +204,18 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
           status: this.status,
           categories: this.checkedCategories
         };
-        if (this.image) {
-          data.image = this.image;
+        if (this.images) {
+          data.images = this.images;
         }
+
+        this.galleryDeleteList.forEach(x => {
+          this.posts.deleteImageFromGallery(this.id, x);
+        });
+
         this.posts.edit(this.id, data).then(() => {
           this.alert.success(this.i18n.get('PostSaved'), false, 5000, true);
           this.navigation.redirectTo('posts', 'list');
+
         }).catch((error: Error) => {
           this.alert.error(error.message);
         }).finally(() => {

@@ -91,13 +91,17 @@ export class PostsService extends DocumentTranslationsService {
     return this.add(data, data.translationId);
   }
 
-  private uploadImage(id: string, imageFile: File) {
+  private uploadImage(id: string, imageFile: File, isPrimary = false) {
     return new Promise((resolve, reject) => {
       if (imageFile && isFile(imageFile)) {
-        const imageName = guid() + '.' + imageFile.name.split('.').pop();
+        const guidd = guid();
+        const imageName = guidd + '.' + imageFile.name.split('.').pop();
         const imagePath = `posts/${id}/${imageName}`;
         this.storage.upload(imagePath, imageFile).then(() => {
-          this.db.setDocument('posts', id, { image: imagePath }).then(() => {
+          if (isPrimary) {
+            this.db.setDocument('posts', id, {image: imagePath});
+          }
+          this.db.setDocument(`posts/${id}/images`, guidd,{ image: imagePath }).then(() => {
             resolve();
           }).catch((error: Error) => {
             reject(error);
@@ -114,8 +118,15 @@ export class PostsService extends DocumentTranslationsService {
   get(id: string) {
     return this.db.getDocument('posts', id).pipe(mergeMap(async (post: Post) => {
       const translations = await this.getTranslations(post.translationId).pipe(take(1)).toPromise();
+      try {
+        const images = await this.db.getDocumentsDataAsPromise(`posts/${id}/images`)
+        post.images = images.map(n => n.data().image);
+      } catch(e) {
+        console.log(e);
+      }
       post.id = id;
       post.translations = translations;
+
       return post;
     }));
   }
@@ -183,23 +194,36 @@ export class PostsService extends DocumentTranslationsService {
       updatedAt: now(),
       updatedBy: this.db.currentUser.id
     };
-    if (/*data.image !== undefined && */data.image === null) {
+    if (/*data.image !== undefined && */data.images === []) {
       post.image = null;
+      post.images = []
     }
     return new Promise((resolve, reject) => {
       this.db.setDocument('posts', id, post).then(() => {
-        this.uploadImage(id, data.image as File).then(() => {
-          resolve();
-        }).catch((error: Error) => {
-          reject(error);
-        });
+        let x = 0;
+        for (let i of data.images) {
+          this.uploadImage(id, i as File, (x==0)).then(() => {
+            console.log('upload success')
+          }).catch((error: Error) => {
+            reject(error);
+          });
+        }
+        resolve();
       }).catch((error: Error) => {
         reject(error);
       });
     });
   }
 
-  private deleteImage(imagePath: string) {
+  async deleteImageFromGallery(postId, id) {
+    //this.deleteImage(path).then(() => {
+      const path = id.id.split('.')[0];
+      await this.db.deleteDocument(`posts/${postId}/images`, path.split('/')[2]);
+      return;
+    //});
+  }
+
+  public deleteImage(imagePath: string) {
     return new Promise((resolve, reject) => {
       // console.log(imagePath);
       if (imagePath) {
