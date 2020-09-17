@@ -22,6 +22,7 @@ import { getEmptyImage } from '../../../helpers/assets.helper';
 export class PostsAddComponent implements OnInit, AfterViewInit, OnDestroy {
 
   title: string;
+  price: string;
   editor: any;
   private status: PostStatus;
   language: string;
@@ -141,6 +142,7 @@ export class PostsAddComponent implements OnInit, AfterViewInit, OnDestroy {
         this.posts.add({
           lang: this.language,
           title: this.title,
+          price: this.price,
           slug: this.slug,
           date: new Date(this.date).getTime(),
           content: this.editor.root.innerHTML,

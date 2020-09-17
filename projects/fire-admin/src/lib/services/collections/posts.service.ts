@@ -52,6 +52,7 @@ export class PostsService extends DocumentTranslationsService {
       title: data.title,
       lang: data.lang,
       slug: data.slug,
+      price: data.price,
       date: data.date,
       image: null,
       content: data.content,
