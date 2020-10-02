@@ -12,6 +12,7 @@ import { NavigationService } from '../../../services/navigation.service';
 import { Post, PostStatus } from '../../../models/collections/post.model';
 import { getEmptyImage } from '../../../helpers/assets.helper';
 import { ActivatedRoute } from '@angular/router';
+import {DndDropEvent, DropEffect} from "ngx-drag-drop";
 
 @Component({
   selector: 'fa-posts-edit',
@@ -40,6 +41,13 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
   private subscription: Subscription = new Subscription();
   private routeParamsChange: Subject<void> = new Subject<void>();
   private galleryDeleteList: any[] = [];
+  private draggable: any;
+  private draggableListLeft: any;
+  readonly horizontalLayout = {
+    container: "row",
+    list: "row",
+    dndHorizontal: true
+  };
 
   constructor(
     private i18n: I18nService,
@@ -48,7 +56,20 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
     private posts: PostsService,
     public navigation: NavigationService,
     private route: ActivatedRoute
-  ) { }
+  ) {
+
+
+
+    this.draggable = {
+      // note that data is handled with JSON.stringify/JSON.parse
+      // only set simple data or POJO's as methods will be lost
+      data: "myDragData",
+      effectAllowed: "all",
+      disable: false,
+      handle: false
+    };
+
+  }
 
   ngOnInit() {
     this.allStatus = this.posts.getAllStatus();
@@ -217,7 +238,7 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
           this.posts.deleteImageFromGallery(this.id, x);
         });
 
-        this.posts.edit(this.id, data).then(() => {
+        this.posts.edit(this.id, data, this.imagesSources).then(() => {
           this.alert.success(this.i18n.get('PostSaved'), false, 5000, true);
           this.navigation.redirectTo('posts', 'list');
 
@@ -233,4 +254,32 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  onDrop($event: DndDropEvent, list: any) {
+    console.log($event);
+    if( list
+      && ($event.dropEffect === "copy"
+        || $event.dropEffect === "move") ) {
+      let index = $event.index;
+      if( typeof index === "undefined" ) {
+        index = list.length;
+      }
+      list.splice( index, 0, $event.data );
+    }
+  }
+
+
+  onDragged( index:any, list:any[], effect:DropEffect ) {
+
+    if( effect === "copy" ) {
+      list.splice( index, 1 );
+    }
+  }
+
+  onDragEnd($event: DragEvent) {
+
+  }
+
+  onDragStart($event: DragEvent) {
+
+  }
 }

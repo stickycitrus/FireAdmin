@@ -53,3 +53,21 @@
   line-height: 15.5rem;
   font-size: 3rem;
 }
+
+.dndDragging {
+
+  border: 1px solid green;
+}
+
+.dndDraggingSource {
+
+  display: none;
+}
+
+.dndPlaceholder {
+
+  min-height: 72px;
+  width: 22%;
+  border: 1px dashed green;
+  background-color: rgba(0, 0, 0, 0.1);
+}

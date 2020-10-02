@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';  
+import { CommonModule } from '@angular/common';
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { FireAdminComponent } from './fire-admin.component';
 import { FireAdminRoutingModule } from './fire-admin-routing.module';
@@ -64,6 +64,7 @@ import { DateTimePipe } from './pipes/datetime.pipe';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeAr from '@angular/common/locales/ar';
+import {DndModule} from "ngx-drag-drop";
 registerLocaleData(localeFr);
 registerLocaleData(localeAr);
 
@@ -109,7 +110,8 @@ registerLocaleData(localeAr);
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireStorageModule,
-    DataTablesModule
+    DataTablesModule,
+    DndModule
   ],
   exports: [
     FireAdminComponent

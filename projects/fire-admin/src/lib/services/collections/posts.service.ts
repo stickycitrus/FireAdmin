@@ -9,8 +9,9 @@ import { getEmptyImage, getLoadingImage } from '../../helpers/assets.helper';
 import { SettingsService } from '../settings.service';
 import { Language } from '../../models/language.model';
 import { UsersService } from './users.service';
-import { QueryFn } from '@angular/fire/firestore';
+import {AngularFirestore, QueryFn} from '@angular/fire/firestore';
 import { DocumentTranslationsService } from './abstract/document-translations.service';
+import DocumentReference = firebase.firestore.DocumentReference;
 
 @Injectable()
 export class PostsService extends DocumentTranslationsService {
@@ -27,7 +28,8 @@ export class PostsService extends DocumentTranslationsService {
     protected db: DatabaseService,
     private storage: StorageService,
     private settings: SettingsService,
-    private users: UsersService
+    private users: UsersService,
+    private fs: AngularFirestore
   ) {
     super(db, 'postTranslations');
     Object.keys(PostStatus).forEach((key: string) => {
@@ -91,17 +93,15 @@ export class PostsService extends DocumentTranslationsService {
     return this.add(data, data.translationId);
   }
 
-  private uploadImage(id: string, imageFile: File, isPrimary = false) {
+  private uploadImage(id: string, imageFile: File) {
     return new Promise((resolve, reject) => {
       if (imageFile && isFile(imageFile)) {
         const guidd = guid();
         const imageName = guidd + '.' + imageFile.name.split('.').pop();
         const imagePath = `posts/${id}/${imageName}`;
-        this.storage.upload(imagePath, imageFile).then(() => {
-          if (isPrimary) {
-            this.db.setDocument('posts', id, {image: imagePath});
-          }
-          this.db.setDocument(`posts/${id}/images`, guidd,{ image: imagePath }).then(() => {
+        this.storage.upload(imagePath, imageFile).then(async () => {
+          this.db.setDocument('posts', id, {image: imagePath});
+          this.db.setDocument(`posts/${id}/images`, guidd,{ image: imagePath, created: Date.now()}).then(() => {
             resolve();
           }).catch((error: Error) => {
             reject(error);
@@ -119,8 +119,12 @@ export class PostsService extends DocumentTranslationsService {
     return this.db.getDocument('posts', id).pipe(mergeMap(async (post: Post) => {
       const translations = await this.getTranslations(post.translationId).pipe(take(1)).toPromise();
       try {
-        const images = await this.db.getDocumentsDataAsPromise(`posts/${id}/images`)
-        post.images = images.map(n => n.data().image);
+        let images = await this.db.getDocumentsDataAsPromise(`posts/${id}/images`)
+        images = images.sort((a: any, b: any) => {
+          return a.data().index - b.data().index;
+        });
+
+        post.images = images.map(n => n.data().image)
       } catch(e) {
         console.log(e);
       }
@@ -181,7 +185,7 @@ export class PostsService extends DocumentTranslationsService {
     return applyPipe ? this.pipePosts(postsObservable) : postsObservable;
   }
 
-  edit(id: string, data: Post) {
+  edit(id: string, data: Post, existingImages = null) {
     const post: Post = {
       title: data.title,
       price: data.price,
@@ -199,15 +203,32 @@ export class PostsService extends DocumentTranslationsService {
       post.images = []
     }
     return new Promise((resolve, reject) => {
-      this.db.setDocument('posts', id, post).then(() => {
+      this.db.setDocument('posts', id, post).then(async () => {
         let x = 0;
+
         for (let i of data.images) {
-          this.uploadImage(id, i as File, (x==0)).then(() => {
-            console.log('upload success')
+          this.uploadImage(id, i as File).then(() => {
+            console.log('upload success');
           }).catch((error: Error) => {
             reject(error);
           });
+          x++;
         }
+
+        let count = 0;
+        for (let i of existingImages) {
+          try {
+            const image = i.id.split('/')[2].split('.')[0];
+            this.fs.doc(`posts/${id}/images/${image}`).set({index: count}, {merge: true});
+            if (count == 0) {
+              this.fs.doc(`posts/${id}`).set({image:i.id}, {merge: true});
+            }
+          } catch (e) {
+            console.error(e);
+          }
+          count ++;
+        }
+
         resolve();
       }).catch((error: Error) => {
         reject(error);

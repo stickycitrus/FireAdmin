@@ -11,7 +11,11 @@ export abstract class DocumentTranslationsService {
   }
 
   protected getTranslations(id: string) {
-    return this.db.getDocument(this.collectionPath, id);
+    try {
+      return this.db.getDocument(this.collectionPath, id);
+    } catch (e) {
+      return null;
+    }
   }
 
   protected getTranslationsWhere(field: string, operator: firebase.firestore.WhereFilterOp, value: string) {

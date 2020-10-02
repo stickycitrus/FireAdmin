@@ -97,19 +97,49 @@
           <div class="block-handle"></div>
         </div>
         <div class="card-body p-0" [class.d-none]="imageCardHeader.isToggled">
-            <span class="d-flex row mr-3 ml-3 mt-3">
-              <div *ngFor="let i of imagesSources" class="edit-user-details__avatar rounded-0 col-md-3 pr-0 pl-0" (click)="onImageDelete(i)">
-                <img [src]="i.url | escapeUrl" alt="Post image" class="img responsive">
-                <label class="edit-user-details__avatar__change rounded-0">
-                  <i class="material-icons mr-1">delete</i>
-                </label>
-              </div><div class="edit-user-details__add rounded-0" (click)="postImage.click()">
+
+            <span >
+
+
+              <div class="d-flex row mr-3 ml-3 mt-3"
+                   dndDropzone
+                    [dndHorizontal]="horizontalLayout"
+                    dndEffectAllowed="copyMove"
+                    (dndDrop)="onDrop($event, imagesSources)">
+
+                <div dndPlaceholderRef class="dndPlaceholder"></div>
+
+                <div
+                      *ngFor="let i of imagesSources; let idx = index"
+                      [dndDraggable]=i
+                      (dndStart)="onDragStart($event)"
+                      (dndCopied)="onDragged(idx, imagesSources, 'copy')"
+                      (dndLinked)="onDragged(idx, imagesSources, 'link')"
+                      (dndMoved)="onDragged(idx, imagesSources, 'move')"
+                      (dndCanceled)="onDragged(idx, imagesSources, 'none')"
+                      (dndEnd)="onDragEnd($event)"
+                      class="edit-user-details__avatar rounded-0 col-md-3 pr-0 pl-0" (click)="onImageDelete(i)">
+
+
+                    <img [src]="i.url | escapeUrl" alt="Post image" class="img responsive">
+                    <label class="edit-user-details__avatar__change rounded-0">
+                      <i class="material-icons mr-1">delete</i>
+                    </label>
+                  </div>
+
+              </div>
+
+
+
+
+              <div class="edit-user-details__add rounded-0" (click)="postImage.click()">
                 <label class="edit-user-details__add__change rounded-0">
                   <i class="material-icons mr-1">add_a_photo</i>
                   <input type="file" accept="image/*" class="d-none" (change)="onImageChange($event)" #postImage>
                 </label>
               </div>
             </span>
+
         </div>
       </div>
       <!-- / images form -->
