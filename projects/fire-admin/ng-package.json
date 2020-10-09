@@ -30,6 +30,8 @@
     "material-icons-font",
     "popper.js",
     "quill",
-    "shards-ui"
+    "shards-ui",
+    "ngx-drag-drop",
+    "rxjs"
   ]
 }

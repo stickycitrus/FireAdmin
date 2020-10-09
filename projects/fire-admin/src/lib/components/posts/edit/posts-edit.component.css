@@ -41,12 +41,11 @@
 .edit-user-details__avatar img {
   width: auto;
   /*max-width: 7.5rem;*/
-  max-height: 15.5rem;
+  max-height: 9.5rem;
 }
 
 .edit-user-details__avatar__change i {
-  line-height: 15.5rem;
-  font-size: 3rem;
+  line-height: 8.5rem;
 }
 
 .edit-user-details__add__change i {
@@ -55,17 +54,14 @@
 }
 
 .dndDragging {
-
   border: 1px solid green;
 }
 
 .dndDraggingSource {
-
   display: none;
 }
 
 .dndPlaceholder {
-
   min-height: 72px;
   width: 22%;
   border: 1px dashed green;

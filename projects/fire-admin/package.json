@@ -1,7 +1,7 @@
 {
-  "name": "ng-fire-admin",
-  "version": "0.0.2",
-  "description": "A mini headless CMS around Angular & Firebase.",
+  "name": "lonsdale-admin",
+  "version": "0.0.1",
+  "description": "Lonsdale Marine CMS.",
   "keywords": [
     "Angular",
     "Firebase",
@@ -10,11 +10,7 @@
     "Headless"
   ],
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/AXeL-dev/FireAdmin"
-  },
-  "homepage": "https://axel-dev.github.io/FireAdmin",
+  "homepage": "https://lonsdalemarine.com.au",
   "dependencies": {
     "@angular/fire": "^5.4.2",
     "@fortawesome/fontawesome-free": "^5.12.1",

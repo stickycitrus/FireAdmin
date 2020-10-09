@@ -30,7 +30,13 @@ export class NavigationService {
 
   getRouterLink(...path: string[]) {
     const root = this.rootPath ? '/' + this.rootPath : [];
-    path = path.map((segment: string) => segment.split('?')[0]); // clean up / remove query params
+    path = path.map((segment: string) => {
+      if (segment) {
+        return segment.split('?')[0];
+      } else {
+        return '';
+      }
+    }); // clean up / remove query params
     return [root, ...path];
   }
 

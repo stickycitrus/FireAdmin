@@ -51,7 +51,7 @@
               <button class="btn btn-sm btn-white" [disabled]="isSubmitButtonsDisabled" [routerLink]="navigation.getRouterLink('posts', 'list')">
                 {{ 'Cancel' | translate }}
               </button>
-              <button class="btn btn-sm btn-accent ml-auto" [disabled]="isSubmitButtonsDisabled || !title?.length || !slug?.length || !date?.length" (click)="savePost($event)" #saveButton>
+              <button class="btn btn-sm btn-accent ml-auto" [disabled]="isSubmitButtonsDisabled || !title?.length || !slug?.length || !date?.length || !imagesSources?.length" (click)="savePost($event)" #saveButton>
                 <i class="material-icons">save</i> {{ 'Save' | translate }} <i *ngIf="saveButton.isLoading" class="fas fa-circle-notch fa-spin ml-1"></i>
               </button>
             </li>
@@ -132,7 +132,7 @@
 
 
 
-              <div class="edit-user-details__add rounded-0" (click)="postImage.click()">
+              <div class="edit-user-details__add rounded-0" (tap)="postImage.click()">
                 <label class="edit-user-details__add__change rounded-0">
                   <i class="material-icons mr-1">add_a_photo</i>
                   <input type="file" accept="image/*" class="d-none" (change)="onImageChange($event)" #postImage>

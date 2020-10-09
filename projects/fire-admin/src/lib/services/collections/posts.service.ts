@@ -11,7 +11,6 @@ import { Language } from '../../models/language.model';
 import { UsersService } from './users.service';
 import {AngularFirestore, QueryFn} from '@angular/fire/firestore';
 import { DocumentTranslationsService } from './abstract/document-translations.service';
-import DocumentReference = firebase.firestore.DocumentReference;
 
 @Injectable()
 export class PostsService extends DocumentTranslationsService {
@@ -49,7 +48,7 @@ export class PostsService extends DocumentTranslationsService {
     return this.allStatus[statusKey];
   }
 
-  add(data: Post, translationId?: string) {
+  add(data: Post, imagesSources, translationId?: string) {
     const post: Post = {
       title: data.title,
       lang: data.lang,
@@ -65,24 +64,26 @@ export class PostsService extends DocumentTranslationsService {
       createdBy: this.db.currentUser.id,
       updatedBy: null
     };
-    if (translationId && data.image && !isFile(data.image)) {
-      post.image = data.image;
+    // if (translationId && data.image && !isFile(data.image)) {
+    //   post.image = data.image;
+    // }
+    if (/*data.image !== undefined && */data.images === []) {
+      post.images = []
     }
     return new Promise((resolve, reject) => {
       this.db.addDocument('posts', post).then((doc: any) => {
-        this.uploadImage(doc.id, data.image as File).then(() => {
-          this.addTranslation(data.lang, doc.id, translationId).then((translation: any) => {
-            doc.set({ translationId: translationId || translation.id}, { merge: true }).then(() => {
-              resolve();
-            }).catch((error: Error) => {
-              reject(error);
-            });
+        let x = 0;
+        for (let i of data.images) {
+          this.uploadImage(doc.id, i as File).then(() => {
+            console.log('upload success');
           }).catch((error: Error) => {
             reject(error);
           });
-        }).catch((error: Error) => {
-          reject(error);
-        });
+          x++;
+        }
+
+        resolve();
+
       }).catch((error: Error) => {
         reject(error);
       });
@@ -117,7 +118,7 @@ export class PostsService extends DocumentTranslationsService {
 
   get(id: string) {
     return this.db.getDocument('posts', id).pipe(mergeMap(async (post: Post) => {
-      const translations = await this.getTranslations(post.translationId).pipe(take(1)).toPromise();
+      //const translations = await this.getTranslations(post.translationId).pipe(take(1)).toPromise();
       try {
         let images = await this.db.getDocumentsDataAsPromise(`posts/${id}/images`)
         images = images.sort((a: any, b: any) => {
@@ -129,7 +130,7 @@ export class PostsService extends DocumentTranslationsService {
         console.log(e);
       }
       post.id = id;
-      post.translations = translations;
+      //post.translations = translations;
 
       return post;
     }));
@@ -157,15 +158,15 @@ export class PostsService extends DocumentTranslationsService {
       //posts.forEach((post: Post) => { // forEach loop doesn't seems to work well with async/await
       for (let post of posts) {
         // console.log(post);
-        post.translations = await this.getTranslations(post.translationId).pipe(take(1)).toPromise();
+        //post.translations = await this.getTranslations(post.translationId).pipe(take(1)).toPromise();
         // console.log(post.translations);
-        const postLanguages = Object.keys(post.translations);
+        //const postLanguages = Object.keys(post.translations);
         post.image = {
           path: post.image,
           url: post.image ? merge(of(getLoadingImage()), this.getImageUrl(post.image as string)) : of(getEmptyImage())
         };
         post.author = post.createdBy ? this.users.getFullName(post.createdBy) : of(null);
-        post.isTranslatable = !activeSupportedLanguages.every((lang: string) => postLanguages.includes(lang));
+        //post.isTranslatable = !activeSupportedLanguages.every((lang: string) => postLanguages.includes(lang));
       }
       //});
       return posts;
@@ -224,7 +225,8 @@ export class PostsService extends DocumentTranslationsService {
               this.fs.doc(`posts/${id}`).set({image:i.id}, {merge: true});
             }
           } catch (e) {
-            console.error(e);
+            //console.error(e);
+            throw e;
           }
           count ++;
         }
@@ -266,20 +268,17 @@ export class PostsService extends DocumentTranslationsService {
         data.imagePath = null; // do not delete image if used by more than 1 post
       }
     }
+
     return new Promise((resolve, reject) => {
-      this.deleteTranslation(data.translationId, data.lang, data.translations).then(() => { // should be done before deleting document (posts observable will be synced before if not)
+      // this.deleteTranslation(data.translationId, data.lang, data.translations).then(() => { // should be done before deleting document (posts observable will be synced before if not)
         this.db.deleteDocument('posts', id).then(() => {
-          this.deleteImage(data.imagePath).then(() => {
-            resolve();
-          }).catch((error: Error) => {
-            reject(error);
-          });
+          resolve();
         }).catch((error: Error) => {
           reject(error);
         });
-      }).catch((error: Error) => {
-        reject(error);
-      });
+      // }).catch((error: Error) => {
+      //   reject(error);
+      // });
     });
   }
 

@@ -198,7 +198,7 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
     //temp delete first and actually delete on save!
     //  this.posts.deleteImageFromGallery(this.id, id).then(() => {
     //    setTimeout(() => {this.loadGallery();}, 500);
-    //  });
+    //});
   }
 
   savePost(event: Event) {
