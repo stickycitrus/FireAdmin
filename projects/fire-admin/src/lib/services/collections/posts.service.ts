@@ -218,15 +218,17 @@ export class PostsService extends DocumentTranslationsService {
 
         let count = 0;
         for (let i of existingImages) {
-          try {
-            const image = i.id.split('/')[2].split('.')[0];
-            this.fs.doc(`posts/${id}/images/${image}`).set({index: count}, {merge: true});
-            if (count == 0) {
-              this.fs.doc(`posts/${id}`).set({image:i.id}, {merge: true});
+          if (i.id) {
+            try {
+              const image = i.id.split('/')[2].split('.')[0];
+              this.fs.doc(`posts/${id}/images/${image}`).set({index: count}, {merge: true});
+              if (count == 0) {
+                this.fs.doc(`posts/${id}`).set({image: i.id}, {merge: true});
+              }
+            } catch (e) {
+              //console.error(e);
+              throw e;
             }
-          } catch (e) {
-            //console.error(e);
-            throw e;
           }
           count ++;
         }

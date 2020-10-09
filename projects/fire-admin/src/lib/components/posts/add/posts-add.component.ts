@@ -45,7 +45,7 @@ export class PostsAddComponent implements OnInit, AfterViewInit, OnDestroy {
     dndHorizontal: true
   };
   private draggable: any;
-  private galleryDeleteList: any;
+  private galleryDeleteList: any = [];
 
   constructor(
     private i18n: I18nService,

@@ -91,6 +91,10 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
             this.image = null;
             this.images = [];
             this.imageSrc = getEmptyImage();
+            this.checkedCategories = post.categories ? post.categories : [];
+            this.routeParamsChange.next();
+            this.setCategoriesObservable();
+            this.isSubmitButtonsDisabled = false;
             if (post.images) {
               post.images.forEach(i => {
                 return this.posts.getImageUrl(i as string).pipe(take(1)).toPromise().then((imageUrl: string) => {
@@ -98,10 +102,6 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
               });
             }
-            this.checkedCategories = post.categories ? post.categories : [];
-            this.routeParamsChange.next();
-            this.setCategoriesObservable();
-            this.isSubmitButtonsDisabled = false;
           } else {
             this.navigation.redirectTo('posts', 'list');
           }
