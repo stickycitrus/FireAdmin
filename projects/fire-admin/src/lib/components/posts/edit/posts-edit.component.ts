@@ -48,6 +48,7 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
     list: "row",
     dndHorizontal: true
   };
+  deleteImageId: any;
 
   constructor(
     private i18n: I18nService,
@@ -97,9 +98,11 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
             this.isSubmitButtonsDisabled = false;
             if (post.images) {
               post.images.forEach(i => {
-                return this.posts.getImageUrl(i as string).pipe(take(1)).toPromise().then((imageUrl: string) => {
-                  this.imagesSources.push({url: imageUrl, id: i});
-                });
+                if(i) {
+                  return this.posts.getImageUrl(i as string).pipe(take(1)).toPromise().then((imageUrl: string) => {
+                    this.imagesSources.push({url: imageUrl, id: i});
+                  });
+                }
               });
             }
           } else {
@@ -187,18 +190,21 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onImageDelete(id) {
+
     this.galleryDeleteList.push(id);
-    const index = this.imagesSources.findIndex(x => x.id == id);
-    this.imagesSources.splice(index-1, 1);
+    let index = this.imagesSources.findIndex(x => x.id === id);
+    if (index > -1) {
+      this.imagesSources.splice(index, 1);
+    } else {
+      const ind = this.imagesSources.findIndex(x => x.url === id);
+      this.imagesSources.splice(ind, 1);
+    }
     if (this.imagesSources.length == 0) {
       this.image = null;
       this.imageSrc = null;
       this.images = [];
     }
-    //temp delete first and actually delete on save!
-    //  this.posts.deleteImageFromGallery(this.id, id).then(() => {
-    //    setTimeout(() => {this.loadGallery();}, 500);
-    //});
+
   }
 
   savePost(event: Event) {
@@ -247,7 +253,7 @@ export class PostsEditComponent implements OnInit, AfterViewInit, OnDestroy {
         }).finally(() => {
           stopLoading();
         });
-      }
+     }
     }).catch((error: Error) => {
       this.alert.error(error.message);
       stopLoading();

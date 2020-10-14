@@ -101,7 +101,7 @@ export class PostsService extends DocumentTranslationsService {
         const imageName = guidd + '.' + imageFile.name.split('.').pop();
         const imagePath = `posts/${id}/${imageName}`;
         this.storage.upload(imagePath, imageFile).then(async () => {
-          this.db.setDocument('posts', id, {image: imagePath});
+          //this.db.setDocument('posts', id, {image: imagePath});
           this.db.setDocument(`posts/${id}/images`, guidd,{ image: imagePath, created: Date.now()}).then(() => {
             resolve();
           }).catch((error: Error) => {

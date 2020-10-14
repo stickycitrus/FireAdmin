@@ -77,6 +77,7 @@ export class UsersEditComponent implements OnInit, OnDestroy {
     const reader = new FileReader();
     reader.onload = () => {
       this.avatarSrc = reader.result;
+
     };
     reader.readAsDataURL(this.avatar);
   }
